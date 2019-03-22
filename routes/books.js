@@ -38,10 +38,22 @@ router
       res.json(books);
     }
   })
-  .post(verifyToken, (req, res) => {
-    const book = req.body;
-    book.id = uuid();
-    res.status(201).json(req.body);
+  .post(verifyToken, async (req, res) => {
+    const { title, author } = req.body;
+    const [foundAuthor, found] = await Author.findOrCreate({
+      where: { name: author }
+    });
+    const newBook = await Book.create({ title: title });
+    await newBook.setAuthor(foundAuthor);
+    const newBookWithAuthor = await Book.findOne({
+      where: { id: newBook.id },
+      include: [Author]
+    });
+    res.status(201).json(newBookWithAuthor);
+
+    // const book = req.body;
+    // book.id = uuid();
+    // res.status(201).json(req.body);
   });
 
 router
