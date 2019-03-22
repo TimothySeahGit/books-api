@@ -39,17 +39,23 @@ router
     }
   })
   .post(verifyToken, async (req, res) => {
-    const { title, author } = req.body;
-    const [foundAuthor, found] = await Author.findOrCreate({
-      where: { name: author }
-    });
-    const newBook = await Book.create({ title: title });
-    await newBook.setAuthor(foundAuthor);
-    const newBookWithAuthor = await Book.findOne({
-      where: { id: newBook.id },
-      include: [Author]
-    });
-    res.status(201).json(newBookWithAuthor);
+    try {
+      const { title, author } = req.body;
+      const [foundAuthor, found] = await Author.findOrCreate({
+        where: { name: author }
+      });
+      const newBook = await Book.create({ title: title });
+      await newBook.setAuthor(foundAuthor);
+      const newBookWithAuthor = await Book.findOne({
+        where: { id: newBook.id },
+        include: [Author]
+      });
+      res.status(201).json(newBookWithAuthor);
+    } catch (ex) {
+      res.status(400).json({
+        err: `Author with name = [${req.body.author}] doesn\'t exist.`
+      });
+    }
 
     // const book = req.body;
     // book.id = uuid();
@@ -58,21 +64,38 @@ router
 
 router
   .route("/:id")
-  .put((req, res) => {
-    const book = oldBooks.find(b => b.id === req.params.id);
-    if (book) {
-      res.status(202).json(req.body);
-    } else {
+  .put(async (req, res) => {
+    try {
+      const book = await Book.findOne({
+        where: { id: req.params.id },
+        include: [Author]
+      });
+      const [foundAuthor, created] = await Author.findOrCreate({
+        where: { title: req.body.author }
+      });
+      console.log(foundAuthor);
+      const result = await book.update({ title: req.body.title });
+      if (created) {
+        await result.setAuthor(foundAuthor);
+      }
+      const updatedBook = await Book.findOne({
+        where: { id: req.params.id },
+        include: [Author]
+      });
+      res.status(202).json(updatedBook);
+    } catch (err) {
       res.sendStatus(400);
     }
   })
-  .delete((req, res) => {
-    const book = oldBooks.find(b => b.id === req.params.id);
-    if (book) {
-      res.sendStatus(202);
-    } else {
-      res.sendStatus(400);
-    }
+  .delete(async (req, res) => {
+    try {
+      const book = await Book.destroy({ where: { id: req.params.id } });
+      if (book) {
+        res.sendStatus(202);
+      } else {
+        res.sendStatus(400);
+      }
+    } catch (err) {}
   });
 
 module.exports = router;
