@@ -1,51 +1,73 @@
 const request = require("supertest");
 const app = require("../../app");
-
-const { books } = require("../../data/db.json");
+const { sequelize } = require("../../models");
+const createAuthorsAndBooks = require("../../seed");
 
 const route = (params = "") => {
   const path = "/api/v1/books";
   return `${path}/${params}`;
 };
 
+beforeAll(async () => {
+  await sequelize.sync({ force: true });
+  await createAuthorsAndBooks;
+});
+afterAll(async () => {
+  await sequelize.close();
+});
+
 describe("Books", () => {
   describe("[GET] Search for books", () => {
+    const verifyBooks = (res, expected) => {
+      const books = res.body;
+      books.forEach((book, index) => {
+        //check title and author are matching
+        expect(book.title).toEqual(expected[index].title);
+        expect(book.author.name).toEqual(expected[index].author.name);
+      });
+    };
     test("returns all books", () => {
+      const expectedBooks = [
+        { id: "1", title: "Animal Farm", author: "George Orwell" },
+        { id: "2", title: "1984", author: "George Orwell" },
+        { id: "3", title: "Homage to Catalonia", author: "George Orwell" },
+        { id: "4", title: "The Road to Wigan Pier", author: "George Orwell" },
+        { id: "5", title: "Brave New World", author: "Aldous Huxley" },
+        { id: "6", title: "Fahrenheit 451", author: "Ray Bradbury" }
+      ];
       return request(app)
         .get(route())
         .expect("content-type", /json/)
         .expect(200)
-        .expect([
-          { id: "1", title: "Animal Farm", author: "George Orwell" },
-          { id: "2", title: "1984", author: "George Orwell" },
-          { id: "3", title: "Homage to Catalonia", author: "George Orwell" },
-          { id: "4", title: "The Road to Wigan Pier", author: "George Orwell" },
-          { id: "5", title: "Brave New World", author: "Aldous Huxley" },
-          { id: "6", title: "Fahrenheit 451", author: "Ray Bradbury" }
-        ]);
+        .then(req => verifyBooks(req, expectedBooks));
     });
 
     test("returns books matching the title query", () => {
+      const expectedBooks = [
+        { id: "1", title: "Animal Farm", author: "George Orwell" }
+      ];
       return request(app)
         .get(route())
-        .query({ title: "1984" })
+        .query({ title: "Animal Farm" })
         .expect("content-type", /json/)
         .expect(200)
-        .expect([{ id: "2", title: "1984", author: "George Orwell" }]);
+        .then(res => verifyBooks(res, expectedBooks));
     });
 
     test("returns books matching the author query", () => {
+      const expectedBooks = [
+        { id: "1", title: "Animal Farm", author: "George Orwell" },
+        { id: "2", title: "1984", author: "George Orwell" },
+        { id: "3", title: "Homage to Catalonia", author: "George Orwell" },
+        { id: "4", title: "The Road to Wigan Pier", author: "George Orwell" }
+      ];
+
       return request(app)
         .get(route())
         .query({ author: "George Orwell" })
         .expect("content-type", /json/)
         .expect(200)
-        .expect([
-          { id: "1", title: "Animal Farm", author: "George Orwell" },
-          { id: "2", title: "1984", author: "George Orwell" },
-          { id: "3", title: "Homage to Catalonia", author: "George Orwell" },
-          { id: "4", title: "The Road to Wigan Pier", author: "George Orwell" }
-        ]);
+        .then(res => verifyBooks(res, expectedBooks));
     });
   });
 
