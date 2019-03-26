@@ -1,12 +1,12 @@
 const uuid = require("uuid/v4");
 const express = require("express");
 const router = express.Router();
-const { books } = require("../data/db.json");
+// const { suspects } = require("../data/db.json");
 
-const Book = require("../models/book");
+const Suspect = require("../models/suspect");
 
-const filterBooksBy = (property, value) => {
-  return books.filter(b => b[property] === value);
+const filterSuspectsBy = (property, value) => {
+  return suspects.filter(b => b[property] === value);
 };
 
 const verifyToken = (req, res, next) => {
@@ -25,46 +25,46 @@ const verifyToken = (req, res, next) => {
 router
   .route("/")
   .get((req, res) => {
-    const { author, title } = req.query;
+    const { description, name } = req.query;
 
-    if (title) {
-      return Book.find({ title }).then(book => res.json(book));
+    if (name) {
+      return Suspect.find({ name }).then(Suspect => res.json(Suspect));
     }
 
-    if (author) {
-      return Book.find({ author }).then(book => res.json(book));
+    if (description) {
+      return Suspect.find({ description }).then(Suspect => res.json(Suspect));
     }
 
-    return Book.find().then(book => res.json(book));
+    return Suspect.find().then(Suspect => res.json(Suspect));
   })
   .post(verifyToken, (req, res) => {
-    const book = new Book(req.body);
-    book.save((err, book) => {
+    const Suspect = new Suspect(req.body);
+    Suspect.save((err, Suspect) => {
       if (err) {
         return res.status(500).end();
       }
-      return res.status(201).json(book);
+      return res.status(201).json(Suspect);
     });
   });
 
 router
   .route("/:id")
   .put((req, res) => {
-    Book.findByIdAndUpdate(
+    Suspect.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true },
-      (err, book) => {
-        return res.status(202).json(book);
+      (err, Suspect) => {
+        return res.status(202).json(Suspect);
       }
     );
   })
   .delete((req, res) => {
-    Book.findByIdAndDelete(req.params.id, (err, book) => {
+    Suspect.findByIdAndDelete(req.params.id, (err, Suspect) => {
       if (err) {
         return res.sendStatus(500);
       }
-      if (!book) {
+      if (!Suspect) {
         return res.sendStatus(404);
       }
       return res.sendStatus(202);

@@ -8,6 +8,6 @@ app.use(express.json());
 
 // routes
 app.use("/", require("./routes/index"));
-app.use("/api/v1/books", require("./routes/books"));
+app.use("/api/v1/suspects", require("./routes/suspects"));
 
 module.exports = app;
