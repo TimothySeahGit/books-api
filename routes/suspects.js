@@ -4,6 +4,7 @@ const router = express.Router();
 // const { suspects } = require("../data/db.json");
 
 const Suspect = require("../models/suspect");
+const Gang = require("../models/gang");
 
 const filterSuspectsBy = (property, value) => {
   return suspects.filter(b => b[property] === value);
@@ -35,15 +36,24 @@ router
       return Suspect.find({ description }).then(Suspect => res.json(Suspect));
     }
 
-    return Suspect.find().then(Suspect => res.json(Suspect));
+    // return Suspect.findOne({ name: "Scruffles" })
+    //   .populate("gang")
+    //   .then(Suspect => res.json(Suspect));
+
+    // return Gang.findOne({ name: "Ku Klutz Katz" }).then(Gang => res.json(Gang));
+
+    return Suspect.find()
+      .populate("gang")
+      .then(Suspect => res.json(Suspect));
   })
-  .post(verifyToken, (req, res) => {
-    const Suspect = new Suspect(req.body);
-    Suspect.save((err, Suspect) => {
+  .post((req, res) => {
+    const suspect = new Suspect(req.body);
+    suspect.save((err, suspect) => {
       if (err) {
+        console.error(err);
         return res.status(500).end();
       }
-      return res.status(201).json(Suspect);
+      return res.status(201).json(suspect);
     });
   });
 

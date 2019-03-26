@@ -12,6 +12,8 @@ const mongodbUri = process.env.MONGODB_URI;
 mongoose.connect(mongodbUri);
 const db = mongoose.connection;
 
+db.dropDatabase();
+
 db.on("error", err => {
   console.error("Unable to connect to database", err);
 });
