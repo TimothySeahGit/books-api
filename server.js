@@ -1,8 +1,9 @@
 const app = require("./app");
 const mongoose = require("mongoose");
+const createSuspects = require("./seed");
 
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config()
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
 }
 
 const port = process.env.PORT;
@@ -20,6 +21,7 @@ db.on("connected", err => {
 });
 
 db.once("connected", () => {
+  createSuspects();
   app.listen(port, () => {
     if (process.env.NODE_ENV === "production") {
       console.log(`Server is running on Heroku with port number ${port}`);
