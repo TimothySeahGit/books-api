@@ -59,7 +59,8 @@ router
 
 router
   .route("/:id")
-  .put((req, res) => {
+  .get((req, res) => {})
+  .patch((req, res) => {
     Suspect.findByIdAndUpdate(
       req.params.id,
       req.body,

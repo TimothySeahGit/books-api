@@ -64,7 +64,7 @@ describe("Suspects", () => {
         });
     });
 
-    test("find suspect by id", async () => {
+    test("adds suspect to database", async () => {
       const addedSuspect = { name: "httpcat201", description: "created" };
       const res = await request(app)
         .post(route())
@@ -79,19 +79,28 @@ describe("Suspects", () => {
       expect(suspect.description).toBe("created");
     });
 
-    test("adds suspect to database", async () => {
-      const addedSuspect = { name: "httpcat201", description: "created" };
+    test("return profile of suspect when name is submitted as query", async () => {
       const res = await request(app)
-        .post(route())
-        .send(addedSuspect)
+        .get(route())
+        .query({ name: "Scruffles" })
         .expect("content-type", /json/)
-        .expect(201);
+        .expect(200);
 
-      expect(res.body.name).toBe("httpcat201");
-      expect(res.body.description).toBe("created");
+      expect(res.body[0].name).toBe("Scruffles");
+    });
+  });
 
-      const suspect = await Suspect.findOne({ name: "httpcat201" });
-      expect(suspect.description).toBe("created");
+  describe("PATCH methods", () => {
+    test("allow edits to be made when the front end is on the :_id route", async () => {
+      const { _id } = await Suspect.findOne({ name: "Scruffles" });
+      console.log(_id);
+
+      const res = await request(app)
+        .patch(route(_id))
+        .send({ description: "He finally took a bath" });
+      const { description } = await Suspect.findById(_id);
+      await console.log(description);
+      expect(res.body.description).toBe("He finally took a bath");
     });
   });
 });
