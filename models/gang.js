@@ -8,8 +8,8 @@ const gangSchema = new mongoose.Schema({
   },
   description: {
     type: String
-  }
-  // members: [{ type: Schema.Types.ObjectId, ref: "Suspect" }]
+  },
+  members: [{ type: Schema.Types.ObjectId, ref: "Suspect" }]
   // members: { type: Schema.Types.Array, ref: "Suspect" }
 });
 

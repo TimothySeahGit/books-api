@@ -10,15 +10,6 @@ const createSuspects = async () => {
       description: "Cats in White"
     });
 
-    // var item = new Item({ name: 'Foo' });
-    // item.save(function (err) {
-
-    //   store.itemsInStore.push(item);
-    //   store.save(function (err) {
-    //     // todo
-    //   });
-    // });
-
     const newGangSuspects = await Suspect.create(
       {
         _id: new mongoose.Types.ObjectId(),
@@ -34,8 +25,18 @@ const createSuspects = async () => {
       }
     );
 
+    await Gang.findOneAndUpdate(
+      { name: "Ku Klutz Katz" },
+      {
+        members: [newGangSuspects[0]._id, newGangSuspects[1]._id]
+      }
+    );
+
     // newGang.members.push(newGangSuspects[0].name);
     // newGang.members.push(newGangSuspects[1].name);
+    // await newGang.save();
+
+    // newGang.set(members, [newGangSuspects[0]._id, newGangSuspects[1]._id]);
     // await newGang.save();
 
     const rivalGang = await Gang.create({
@@ -45,11 +46,20 @@ const createSuspects = async () => {
     });
 
     const rivalGangSuspects = await Suspect.create([
-      { gang: rivalGang._id, name: "Robert", description: "Ordinary cat" }
+      {
+        _id: new mongoose.Types.ObjectId(),
+        gang: rivalGang._id,
+        name: "Robert",
+        description: "Ordinary cat"
+      }
     ]);
 
-    // rivalGang.members.push(rivalGangSuspects[0].name);
-    // await rivalGang.save();
+    await Gang.findOneAndUpdate(
+      { name: "The Lyin' Kings" },
+      {
+        members: [rivalGangSuspects[0]._id]
+      }
+    );
   } catch (err) {
     console.error(err);
   }

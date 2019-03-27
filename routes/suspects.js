@@ -32,16 +32,6 @@ router
       return Suspect.find({ name }).then(Suspect => res.json(Suspect));
     }
 
-    if (description) {
-      return Suspect.find({ description }).then(Suspect => res.json(Suspect));
-    }
-
-    // return Suspect.findOne({ name: "Scruffles" })
-    //   .populate("gang")
-    //   .then(Suspect => res.json(Suspect));
-
-    // return Gang.findOne({ name: "Ku Klutz Katz" }).then(Gang => res.json(Gang));
-
     return Suspect.find()
       .populate("gang")
       .then(Suspect => res.json(Suspect));

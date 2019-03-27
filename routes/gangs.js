@@ -6,6 +6,16 @@ const router = express.Router();
 const Suspect = require("../models/suspect");
 const Gang = require("../models/gang");
 
-router.route("/");
+router.route("/").get((req, res) => {
+  const { name } = req.query;
+
+  if (name) {
+    return Gang.find({ name }).then(Gang => res.json(Gang));
+  }
+
+  return Gang.find()
+    .populate("members")
+    .then(Gang => res.json(Gang));
+});
 
 module.exports = router;
