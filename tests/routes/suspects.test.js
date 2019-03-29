@@ -27,7 +27,11 @@ describe("Suspects", () => {
 
   beforeEach(async () => {
     await Suspect.insertMany([
-      { name: "Scruffles", description: "Scruffy. Hasn't bathed in years" },
+      {
+        id: "1",
+        name: "Scruffles",
+        description: "Scruffy. Hasn't bathed in years"
+      },
       { name: "Mad Cat", description: "Where did he get that Mech?" },
       { name: "The Lyin' King", description: "There he lies" }
     ]);
@@ -87,6 +91,14 @@ describe("Suspects", () => {
         .expect(200);
 
       expect(res.body[0].name).toBe("Scruffles");
+    });
+    test("return profile of suspect when id is submitted to route", async () => {
+      const res = await request(app)
+        .get(route("Scruffles"))
+        .expect("content-type", /json/)
+        .expect(200);
+
+      expect(res.body.name).toBe("Scruffles");
     });
   });
 

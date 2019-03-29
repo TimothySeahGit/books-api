@@ -49,7 +49,12 @@ router
 
 router
   .route("/:id")
-  .get((req, res) => {})
+  .get((req, res) => {
+    const identity = req.params.id;
+    return Suspect.findOne({ name: identity }).then(Suspect =>
+      res.json(Suspect)
+    );
+  })
   .patch((req, res) => {
     Suspect.findByIdAndUpdate(
       req.params.id,

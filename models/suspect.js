@@ -11,7 +11,12 @@ const suspectSchema = new mongoose.Schema({
   description: {
     type: String,
     required: true
-  }
+  },
+  mugshot: {
+    data: Buffer,
+    contentType: String
+  },
+  attachment: { type: Schema.Types.ObjectId, ref: "Attachment" }
 });
 
 const Suspect = mongoose.model("Suspect", suspectSchema);

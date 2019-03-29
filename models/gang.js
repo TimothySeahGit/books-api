@@ -9,7 +9,8 @@ const gangSchema = new mongoose.Schema({
   description: {
     type: String
   },
-  members: [{ type: Schema.Types.ObjectId, ref: "Suspect" }]
+  members: [{ type: Schema.Types.ObjectId, ref: "Suspect" }],
+  logo: { type: Schema.Types.ObjectId, ref: "Attachment" }
   // members: { type: Schema.Types.Array, ref: "Suspect" }
 });
 

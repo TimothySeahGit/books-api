@@ -1,9 +1,30 @@
 const mongoose = require("mongoose");
 const Suspect = require("./models/suspect");
 const Gang = require("./models/gang");
+const fs = require("fs");
+const gridfs = require("mongoose-gridfs");
 
 const createSuspects = async () => {
   try {
+    // instantiate mongoose-gridfs
+    const { model: Attachment } = gridfs({
+      collection: "attachments",
+      model: "Attachment",
+      mongooseConnection: mongoose.connection
+    });
+
+    // create or save a file to gridfs
+    const readStream = await fs.createReadStream("./Sedgewick.mp4");
+    const options = { filename: "sample.txt", contentType: "text/plain" };
+    const fileId = await Attachment.write(
+      options,
+      readStream,
+      (error, file) => {
+        console.log(file);
+        return file._id;
+      }
+    );
+
     const newGang = await Gang.create({
       _id: new mongoose.Types.ObjectId(),
       name: "Ku Klutz Katz",
@@ -15,7 +36,11 @@ const createSuspects = async () => {
         _id: new mongoose.Types.ObjectId(),
         gang: newGang._id,
         name: "Scruffles",
-        description: "Scruffy. Hasn't bathed in years"
+        description: "Scruffy. Hasn't bathed in years",
+        mugshot: {
+          data: Buffer(fs.readFileSync("./madcat.jpg", "base64"), "base64"),
+          contentType: "image/jpg"
+        }
       },
       {
         _id: new mongoose.Types.ObjectId(),
@@ -28,9 +53,15 @@ const createSuspects = async () => {
     await Gang.findOneAndUpdate(
       { name: "Ku Klutz Katz" },
       {
-        members: [newGangSuspects[0]._id, newGangSuspects[1]._id]
+        members: [newGangSuspects[0]._id, newGangSuspects[1]._id],
+        logo: mongoose.Types.ObjectId(fileId)
       }
     );
+
+    // await Suspect.findOneAndUpdate(
+    //   { name: "Scruffles" },
+    //   { attachment: attache._id }
+    // );
 
     // newGang.members.push(newGangSuspects[0].name);
     // newGang.members.push(newGangSuspects[1].name);
