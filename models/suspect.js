@@ -3,7 +3,8 @@ const Schema = mongoose.Schema;
 
 const suspectSchema = new mongoose.Schema({
   gang: { type: Schema.Types.ObjectId, ref: "Gang" },
-
+  //convert this to string: so that when someone adds a suspect to database, he just needs to type in Gang.
+  // It should suggest a preexisting gang to add him to.
   name: {
     type: String,
     required: true

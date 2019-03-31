@@ -38,15 +38,19 @@ const createSuspects = async () => {
         name: "Scruffles",
         description: "Scruffy. Hasn't bathed in years",
         mugshot: {
-          data: Buffer(fs.readFileSync("./madcat.jpg", "base64"), "base64"),
-          contentType: "image/jpg"
+          data: Buffer(fs.readFileSync("./Scruffles.jpg", "base64"), "base64"),
+          contentType: "image/png"
         }
       },
       {
         _id: new mongoose.Types.ObjectId(),
         gang: newGang._id,
         name: "Mad Cat",
-        description: "Where did he get that Mech?"
+        description: "Where did he get that Mech?",
+        mugshot: {
+          data: Buffer(fs.readFileSync("./madcat.jpg", "base64"), "base64"),
+          contentType: "image/jpg"
+        }
       }
     );
 
@@ -54,7 +58,14 @@ const createSuspects = async () => {
       { name: "Ku Klutz Katz" },
       {
         members: [newGangSuspects[0]._id, newGangSuspects[1]._id],
-        logo: mongoose.Types.ObjectId(fileId)
+        logo: {
+          data: Buffer(
+            fs.readFileSync("./kuklutzkatz.jpg", "base64"),
+            "base64"
+          ),
+          contentType: "image/jpg"
+        }
+        // logo: mongoose.Types.ObjectId(fileId)
       }
     );
 
