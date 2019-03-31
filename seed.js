@@ -6,24 +6,24 @@ const gridfs = require("mongoose-gridfs");
 
 const createSuspects = async () => {
   try {
-    // instantiate mongoose-gridfs
-    const { model: Attachment } = gridfs({
-      collection: "attachments",
-      model: "Attachment",
-      mongooseConnection: mongoose.connection
-    });
+    // // instantiate mongoose-gridfs
+    // const { model: Attachment } = gridfs({
+    //   collection: "attachments",
+    //   model: "Attachment",
+    //   mongooseConnection: mongoose.connection
+    // });
 
-    // create or save a file to gridfs
-    const readStream = await fs.createReadStream("./Sedgewick.mp4");
-    const options = { filename: "sample.txt", contentType: "text/plain" };
-    const fileId = await Attachment.write(
-      options,
-      readStream,
-      (error, file) => {
-        console.log(file);
-        return file._id;
-      }
-    );
+    // // create or save a file to gridfs
+    // const readStream = await fs.createReadStream("./Sedgewick.mp4");
+    // const options = { filename: "sample.txt", contentType: "text/plain" };
+    // const fileId = await Attachment.write(
+    //   options,
+    //   readStream,
+    //   (error, file) => {
+    //     console.log(file);
+    //     return file._id;
+    //   }
+    // );
 
     const newGang = await Gang.create({
       _id: new mongoose.Types.ObjectId(),
@@ -38,8 +38,8 @@ const createSuspects = async () => {
         name: "Scruffles",
         description: "Scruffy. Hasn't bathed in years",
         mugshot: {
-          data: Buffer(fs.readFileSync("./Scruffles.jpg", "base64"), "base64"),
-          contentType: "image/png"
+          data: Buffer(fs.readFileSync("./madcat.jpg", "base64"), "base64"),
+          contentType: "image/jpg"
         }
       },
       {
@@ -48,8 +48,8 @@ const createSuspects = async () => {
         name: "Mad Cat",
         description: "Where did he get that Mech?",
         mugshot: {
-          data: Buffer(fs.readFileSync("./madcat.jpg", "base64"), "base64"),
-          contentType: "image/jpg"
+          data: Buffer(fs.readFileSync("./Scruffles.png", "base64"), "base64"),
+          contentType: "image/png"
         }
       }
     );
@@ -65,6 +65,7 @@ const createSuspects = async () => {
           ),
           contentType: "image/jpg"
         }
+
         // logo: mongoose.Types.ObjectId(fileId)
       }
     );
